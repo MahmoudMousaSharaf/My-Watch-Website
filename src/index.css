@@ -1,0 +1,134 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Fashe Fashion Website Design System */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+
+@layer base {
+  :root {
+    /* Base colors inspired by Fashe theme */
+    --background: 0 0% 100%;
+    --foreground: 0 0% 13%;
+    
+    /* Fashion brand colors */
+    --primary: 0 0% 13%; /* Black for main text */
+    --primary-foreground: 0 0% 100%;
+    
+    --coral: 10 78% 64%; /* Coral accent color */
+    --coral-foreground: 0 0% 100%;
+    
+    --muted: 0 0% 46%; /* Gray text */
+    --muted-foreground: 0 0% 46%;
+    
+    --neutral-light: 0 0% 96%; /* Light gray backgrounds */
+    --neutral-border: 0 0% 88%; /* Borders */
+    
+    /* Overlay for hero sections */
+    --overlay: 0 0% 0% / 0.3;
+    
+    --radius: 0rem; /* Minimal border radius for clean look */
+  }
+}
+
+@layer base {
+  * {
+    @apply border-neutral-border;
+  }
+
+  body {
+    @apply bg-background text-foreground font-sans;
+    font-family: 'Poppins', sans-serif;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-medium;
+  }
+}
+
+@layer components {
+  .hero-overlay {
+    background: linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.3));
+  }
+  
+  .category-card {
+    @apply relative overflow-hidden cursor-pointer;
+  }
+  
+  .category-card img {
+    @apply transition-transform duration-500 group-hover:scale-110;
+  }
+  
+  .nav-link {
+    @apply text-sm font-medium tracking-wide uppercase transition-colors hover:text-coral;
+  }
+  
+  .social-icon {
+    @apply w-4 h-4 text-muted transition-colors hover:text-coral;
+  }
+}
+
+@layer utilities {
+  .text-coral {
+    color: hsl(var(--coral));
+  }
+  
+  .bg-coral {
+    background-color: hsl(var(--coral));
+  }
+  
+  .text-muted {
+    color: hsl(var(--muted));
+  }
+  
+  .bg-neutral-light {
+    background-color: hsl(var(--neutral-light));
+  }
+  
+  .border-neutral-border {
+    border-color: hsl(var(--neutral-border));
+  }
+  
+  .scroll-fade-in {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+  }
+  
+  .scroll-fade-in.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  
+  .scroll-slide-up {
+    opacity: 0;
+    transform: translateY(50px);
+    transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+  }
+  
+  .scroll-slide-up.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  
+  .hover-lift {
+    @apply transition-all duration-500 ease-out hover:-translate-y-2 hover:shadow-xl;
+  }
+  
+  .hover-scale {
+    @apply transition-transform duration-500 ease-out hover:scale-105;
+  }
+  
+  .hover-brightness {
+    @apply transition-all duration-500 hover:brightness-110 hover:contrast-105;
+  }
+  
+  .product-hover {
+    @apply transition-all duration-500 ease-out;
+  }
+  
+  .product-hover:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+  }
+}

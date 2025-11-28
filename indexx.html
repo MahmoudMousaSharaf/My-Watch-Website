@@ -1,0 +1,936 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TimePiece Store</title>
+    <meta name="description" content="Discover the latest fashion trends with Fashe - your premier destination for women's clothing, accessories, and style" />
+    <meta name="author" content="Fashe Fashion" />
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+    
+    <style>
+        /* Custom CSS Variables and Styles */
+        :root {
+            --background: 0 0% 100%;
+            --foreground: 0 0% 13%;
+            --primary: 0 0% 13%;
+            --primary-foreground: 0 0% 100%;
+            --coral: 10 78% 64%;
+            --coral-foreground: 0 0% 100%;
+            --muted: 0 0% 46%;
+            --muted-foreground: 0 0% 46%;
+            --neutral-light: 0 0% 96%;
+            --neutral-border: 0 0% 88%;
+            --overlay: 0 0% 0% / 0.3;
+            --radius: 0rem;
+        }
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: hsl(var(--background));
+            color: hsl(var(--foreground));
+        }
+        
+        .text-coral { color: hsl(var(--coral)); }
+        .bg-coral { background-color: hsl(var(--coral)); }
+        .text-muted { color: hsl(var(--muted)); }
+        .bg-neutral-light { background-color: hsl(var(--neutral-light)); }
+        .border-neutral-border { border-color: hsl(var(--neutral-border)); }
+        .text-primary { color: hsl(var(--primary)); }
+        .bg-primary { background-color: hsl(var(--primary)); }
+        
+        .hero-overlay {
+            background: linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.3));
+        }
+        
+        .category-card {
+            position: relative;
+            overflow: hidden;
+            cursor: pointer;
+        }
+        
+        .category-card img {
+            transition: transform 0.5s;
+        }
+        
+        .category-card:hover img {
+            transform: scale(1.1);
+        }
+        
+        .nav-link {
+            font-size: 0.875rem;
+            font-weight: 500;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            transition: color 0.3s;
+        }
+        
+        .nav-link:hover {
+            color: hsl(var(--coral));
+        }
+        
+        .social-icon {
+            width: 1rem;
+            height: 1rem;
+            color: hsl(var(--muted));
+            transition: color 0.3s;
+        }
+        
+        .social-icon:hover {
+            color: hsl(var(--coral));
+        }
+        
+        /* Hide sections initially */
+        .section {
+            display: none;
+        }
+        
+        .section.active {
+            display: block;
+        }
+        
+        /* Animation classes */
+        .fade-in {
+            animation: fadeIn 0.5s ease-in-out;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        .slide-in {
+            animation: slideIn 0.5s ease-in-out;
+        }
+        
+        @keyframes slideIn {
+            from { transform: translateX(-100%); }
+            to { transform: translateX(0); }
+        }
+        
+        /* Custom button styles */
+        .btn-primary {
+            background-color: hsl(var(--primary));
+            color: white;
+            padding: 0.75rem 2rem;
+            border: none;
+            border-radius: 9999px;
+            font-weight: 500;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+        
+        .btn-primary:hover {
+            background-color: hsl(var(--coral));
+        }
+        
+        .btn-coral {
+            background-color: hsl(var(--coral));
+            color: white;
+            padding: 0.75rem 2rem;
+            border: none;
+            border-radius: 9999px;
+            font-weight: 500;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+        
+        .btn-coral:hover {
+            background-color: hsl(var(--coral) / 0.9);
+        }
+        
+        /* Form styles */
+        .form-input {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 1px solid hsl(var(--neutral-border));
+            border-radius: 0.375rem;
+            outline: none;
+            transition: all 0.3s;
+        }
+        
+        .form-input:focus {
+            border-color: hsl(var(--coral));
+            box-shadow: 0 0 0 2px hsl(var(--coral) / 0.2);
+        }
+        
+        /* Carousel styles */
+        .carousel-container {
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .carousel-track {
+            display: flex;
+            transition: transform 0.5s ease-in-out;
+            height: 100%;
+        }
+        
+        .carousel-slide {
+            min-width: 100%;
+            flex-shrink: 0;
+            height: 100%;
+        }
+    </style>
+</head>
+<body>
+    <!-- Login Section -->
+    <section id="login-section" class="section active">
+        <div class="min-h-screen bg-neutral-light flex items-center justify-center px-4">
+            <div class="bg-white rounded-lg shadow-lg p-8 w-full max-w-md fade-in">
+                <div class="text-center mb-8">
+                    <h1 class="text-3xl font-bold text-primary mb-2">TIME PIECE</h1>
+                    <h2 class="text-xl font-semibold">Welcome Back</h2>
+                    <p class="text-muted mt-2">Please sign in to your account</p>
+                </div>
+
+                <form id="login-form" class="space-y-6">
+                    <div>
+                        <label for="login-email" class="block text-sm font-medium mb-2">Email Address</label>
+                        <input type="email" id="login-email" class="form-input" placeholder="Enter your email" required>
+                    </div>
+
+                    <div>
+                        <label for="login-password" class="block text-sm font-medium mb-2">Password</label>
+                        <input type="password" id="login-password" class="form-input" placeholder="Enter your password" required>
+                    </div>
+
+                    <button type="submit" class="w-full btn-primary">Sign In</button>
+                </form>
+
+                <div class="mt-6 text-center">
+                    <p class="text-muted">
+                        Don't have an account? 
+                        <a href="#" id="goto-register" class="text-coral hover:underline font-medium">Sign up here</a>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Register Section -->
+    <section id="register-section" class="section">
+        <div class="min-h-screen bg-neutral-light flex items-center justify-center px-4">
+            <div class="bg-white rounded-lg shadow-lg p-8 w-full max-w-md fade-in">
+                <div class="text-center mb-8">
+                    <h1 class="text-3xl font-bold text-primary mb-2">TIME PIECE</h1>
+                    <h2 class="text-xl font-semibold">Create Account</h2>
+                    <p class="text-muted mt-2">Please fill in your information</p>
+                </div>
+
+                <form id="register-form" class="space-y-6">
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label for="firstName" class="block text-sm font-medium mb-2">First Name</label>
+                            <input type="text" id="firstName" class="form-input" placeholder="First name" required>
+                        </div>
+                        <div>
+                            <label for="lastName" class="block text-sm font-medium mb-2">Last Name</label>
+                            <input type="text" id="lastName" class="form-input" placeholder="Last name" required>
+                        </div>
+                    </div>
+
+                    <div>
+                        <label for="register-email" class="block text-sm font-medium mb-2">Email Address</label>
+                        <input type="email" id="register-email" class="form-input" placeholder="Enter your email" required>
+                    </div>
+
+                    <div>
+                        <label for="register-password" class="block text-sm font-medium mb-2">Password</label>
+                        <input type="password" id="register-password" class="form-input" placeholder="Create password" required>
+                    </div>
+
+                    <div>
+                        <label for="confirmPassword" class="block text-sm font-medium mb-2">Confirm Password</label>
+                        <input type="password" id="confirmPassword" class="form-input" placeholder="Confirm password" required>
+                    </div>
+
+                    <button type="submit" class="w-full btn-primary">Create Account</button>
+                </form>
+
+                <div class="mt-6 text-center">
+                    <p class="text-muted">
+                        Already have an account? 
+                        <a href="#" id="goto-login" class="text-coral hover:underline font-medium">Sign in here</a>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Main App Section -->
+    <section id="main-app" class="section">
+        <!-- Header -->
+        <header class="bg-white border-b border-neutral-border sticky top-0 z-50">
+            <div class="container mx-auto px-4 py-4 flex items-center justify-between">
+                <!-- Logo -->
+                <div class="text-2xl font-bold text-primary tracking-wide cursor-pointer" onclick="showSection('home')">
+                    TIMEPIECE
+                </div>
+
+                <!-- Navigation -->
+                <nav class="hidden md:flex items-center space-x-8">
+                    <a href="#" class="nav-link" onclick="showSection('home')">Home</a>
+                    <a href="#" class="nav-link" onclick="scrollToElement('shop')">Shop</a>
+                    <a href="#" class="nav-link" onclick="scrollToElement('watchblog')">Blog</a>
+                    <div class="relative">
+                        <button id="other-dropdown-btn" class="flex items-center nav-link">
+                            Other
+                            <i data-lucide="chevron-down" class="w-4 h-4 ml-1"></i>
+                        </button>
+                        <div id="other-dropdown" class="absolute top-full mt-2 bg-white shadow-lg rounded-md py-2 w-40 border border-neutral-border hidden">
+                            <a href="#" class="block px-4 py-2 text-primary hover:text-coral hover:bg-gray-50 transition-colors" onclick="showSection('about')">About</a>
+                            <a href="#" class="block px-4 py-2 text-primary hover:text-coral hover:bg-gray-50 transition-colors" onclick="showSection('contact')">Contact Us</a>
+                        </div>
+                    </div>
+                    <a href="#" class="nav-link" onclick="signOut()">Sign Out</a>
+                </nav>
+
+                <div class="flex items-center space-x-6">
+                    <i data-lucide="log-out" class="w-6 h-6 text-muted cursor-pointer hover:text-coral transition-colors" onclick="signOut()"></i>
+                    <div class="relative">
+                        <i data-lucide="shopping-bag" class="w-6 h-6 text-muted cursor-pointer hover:text-coral transition-colors"></i>
+                        <span class="absolute -top-2 -right-2 bg-coral text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">3</span>
+                    </div>
+                    <i data-lucide="user" class="w-6 h-6 text-muted cursor-pointer hover:text-coral transition-colors"></i>
+                </div>
+            </div>
+        </header>
+
+        <!-- Home Content -->
+        <div id="home-content" class="content-section">
+            <!-- Hero Section -->
+            <div class="relative h-screen overflow-hidden">
+                <div class="relative h-full max-w-6xl mx-auto px-4">
+                    <div id="hero-carousel" class="carousel-container h-full">
+                    <div class="carousel-track" id="hero-track">
+                        <div class="carousel-slide bg-cover bg-center bg-no-repeat" style="background-image: url('./watch-hero.jpg');">
+                            <div class="hero-overlay absolute inset-0"></div>
+                        </div>
+                        <div class="carousel-slide bg-cover bg-center bg-no-repeat" style="background-image: url('./watch-hero-2.jpg');">
+                            <div class="hero-overlay absolute inset-0"></div>
+                        </div>
+                        <div class="carousel-slide bg-cover bg-center bg-no-repeat" style="background-image: url('./watch-hero-3.jpg');">
+                            <div class="hero-overlay absolute inset-0"></div>
+                        </div>
+                        <div class="carousel-slide bg-cover bg-center bg-no-repeat" style="background-image: url('./watch-hero-4.jpg');">
+                            <div class="hero-overlay absolute inset-0"></div>
+                        </div>
+                    </div>
+                    </div>
+                    
+                    <!-- Navigation Arrows -->
+                    <button onclick="previousHeroSlide()" class="absolute left-6 top-1/2 transform -translate-y-1/2 z-20 bg-white/20 hover:bg-white/30 rounded-full p-3 transition-all duration-300">
+                    <i data-lucide="chevron-left" class="w-6 h-6 text-white"></i>
+                </button>
+                <button onclick="nextHeroSlide()" class="absolute right-6 top-1/2 transform -translate-y-1/2 z-20 bg-white/20 hover:bg-white/30 rounded-full p-3 transition-all duration-300">
+                    <i data-lucide="chevron-right" class="w-6 h-6 text-white"></i>
+                </button>
+                
+                <!-- Slide Indicators -->
+                <div class="absolute bottom-6 left-1/2 transform -translate-x-1/2 z-20 flex space-x-2" id="hero-indicators">
+                    <button onclick="goToHeroSlide(0)" class="w-3 h-3 rounded-full bg-white transition-all duration-300"></button>
+                    <button onclick="goToHeroSlide(1)" class="w-3 h-3 rounded-full bg-white/50 transition-all duration-300"></button>
+                    <button onclick="goToHeroSlide(2)" class="w-3 h-3 rounded-full bg-white/50 transition-all duration-300"></button>
+                    <button onclick="goToHeroSlide(3)" class="w-3 h-3 rounded-full bg-white/50 transition-all duration-300"></button>
+                </div>
+                
+                <div class="relative z-10 flex items-center justify-center h-full">
+                    <div class="text-center text-white">
+                        <p class="text-sm font-light tracking-[3px] uppercase mb-4">Premium Collection 2025</p>
+                        <h1 id="hero-title" class="text-6xl md:text-8xl font-bold tracking-[8px] mb-8">LUXURY WATCHES</h1>
+                        <div class="flex gap-4 justify-center">
+                            <button onclick="scrollToElement('shop')" class="bg-white text-primary px-10 py-4 text-sm font-medium tracking-[2px] uppercase hover:bg-coral hover:text-white transition-colors duration-300 rounded-full">
+                                Shop Now
+                            </button>
+                            <button onclick="showSection('contact')" class="bg-transparent border-2 border-white text-white px-10 py-4 text-sm font-medium tracking-[2px] uppercase hover:bg-white hover:text-primary transition-colors duration-300 rounded-full">
+                                Contact Us
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                </div>
+            </div>
+
+            <!-- Product Grid Section -->
+            <section id="shop" class="py-20 bg-white">
+                <div class="container mx-auto px-4">
+                    <div class="text-center mb-12">
+                        <h2 class="text-3xl font-light tracking-[3px] text-primary mb-4">Premium Watch Collection</h2>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+                        <div class="group cursor-pointer">
+                            <div class="relative overflow-hidden mb-4">
+                                <img src="src/assets/watch-product-1.jpg" alt="Luxury Swiss Watch" class="w-full h-96 object-cover transition-transform duration-500 group-hover:scale-110">
+                                <div class="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                                <div class="absolute top-4 right-4">
+                                    <i data-lucide="heart" class="w-6 h-6 text-white hover:text-coral transition-colors cursor-pointer"></i>
+                                </div>
+                                <div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                                    <div class="text-center text-white">
+                                        <h3 class="text-xl font-medium mb-2">Luxury Swiss Watch</h3>
+                                        <p class="text-lg opacity-90">$1,299.99</p>
+                                    </div>
+                                </div>
+                                <div class="absolute inset-x-4 bottom-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                                    <button class="w-full bg-white text-primary px-6 py-3 text-sm font-medium tracking-wide uppercase hover:bg-coral hover:text-white transition-colors flex items-center justify-center gap-2">
+                                        <i data-lucide="shopping-cart" class="w-4 h-4"></i>
+                                        Add to Cart
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="text-center">
+                                <h3 class="text-lg font-medium text-primary mb-2 group-hover:text-coral transition-colors">Luxury Swiss Watch</h3>
+                                <p class="text-muted text-lg font-medium">$1,299.99</p>
+                            </div>
+                        </div>
+
+                        <div class="group cursor-pointer">
+                            <div class="relative overflow-hidden mb-4">
+                                <img src="src/assets/watch-product-2.jpg" alt="Smart Sport Watch" class="w-full h-96 object-cover transition-transform duration-500 group-hover:scale-110">
+                                <div class="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                                <div class="absolute top-4 right-4">
+                                    <i data-lucide="heart" class="w-6 h-6 text-white hover:text-coral transition-colors cursor-pointer"></i>
+                                </div>
+                                <div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                                    <div class="text-center text-white">
+                                        <h3 class="text-xl font-medium mb-2">Smart Sport Watch</h3>
+                                        <p class="text-lg opacity-90">$399.99</p>
+                                    </div>
+                                </div>
+                                <div class="absolute inset-x-4 bottom-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                                    <button class="w-full bg-white text-primary px-6 py-3 text-sm font-medium tracking-wide uppercase hover:bg-coral hover:text-white transition-colors flex items-center justify-center gap-2">
+                                        <i data-lucide="shopping-cart" class="w-4 h-4"></i>
+                                        Add to Cart
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="text-center">
+                                <h3 class="text-lg font-medium text-primary mb-2 group-hover:text-coral transition-colors">Smart Sport Watch</h3>
+                                <p class="text-muted text-lg font-medium">$399.99</p>
+                            </div>
+                        </div>
+
+                        <div class="group cursor-pointer">
+                            <div class="relative overflow-hidden mb-4">
+                                <img src="src/assets/watch-product-3.jpg" alt="Classic Leather Band" class="w-full h-96 object-cover transition-transform duration-500 group-hover:scale-110">
+                                <div class="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                                <div class="absolute top-4 right-4">
+                                    <i data-lucide="heart" class="w-6 h-6 text-white hover:text-coral transition-colors cursor-pointer"></i>
+                                </div>
+                                <div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                                    <div class="text-center text-white">
+                                        <h3 class="text-xl font-medium mb-2">Classic Leather Band</h3>
+                                        <p class="text-lg opacity-90">$899.99</p>
+                                    </div>
+                                </div>
+                                <div class="absolute inset-x-4 bottom-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                                    <button class="w-full bg-white text-primary px-6 py-3 text-sm font-medium tracking-wide uppercase hover:bg-coral hover:text-white transition-colors flex items-center justify-center gap-2">
+                                        <i data-lucide="shopping-cart" class="w-4 h-4"></i>
+                                        Add to Cart
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="text-center">
+                                <h3 class="text-lg font-medium text-primary mb-2 group-hover:text-coral transition-colors">Classic Leather Band</h3>
+                                <p class="text-muted text-lg font-medium">$899.99</p>
+                            </div>
+                        </div>
+
+                        <div class="group cursor-pointer">
+                            <div class="relative overflow-hidden mb-4">
+                                <img src="src/assets/watch-product-4.jpg" alt="Chronograph Sport" class="w-full h-96 object-cover transition-transform duration-500 group-hover:scale-110">
+                                <div class="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                                <div class="absolute top-4 right-4">
+                                    <i data-lucide="heart" class="w-6 h-6 text-white hover:text-coral transition-colors cursor-pointer"></i>
+                                </div>
+                                <div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                                    <div class="text-center text-white">
+                                        <h3 class="text-xl font-medium mb-2">Chronograph Sport</h3>
+                                        <p class="text-lg opacity-90">$599.99</p>
+                                    </div>
+                                </div>
+                                <div class="absolute inset-x-4 bottom-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                                    <button class="w-full bg-white text-primary px-6 py-3 text-sm font-medium tracking-wide uppercase hover:bg-coral hover:text-white transition-colors flex items-center justify-center gap-2">
+                                        <i data-lucide="shopping-cart" class="w-4 h-4"></i>
+                                        Add to Cart
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="text-center">
+                                <h3 class="text-lg font-medium text-primary mb-2 group-hover:text-coral transition-colors">Chronograph Sport</h3>
+                                <p class="text-muted text-lg font-medium">$599.99</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Watch Features Section -->
+            <section class="py-20 bg-white">
+                <div class="container mx-auto px-4">
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+                        <!-- Image -->
+                        <div class="order-2 lg:order-1">
+                            <img src="src/assets/watch-product-1.jpg" alt="Premium Watch Collection" class="w-full h-[600px] object-cover rounded-lg">
+                        </div>
+
+                        <!-- Content -->
+                        <div class="order-1 lg:order-2">
+                            <div class="max-w-lg">
+                                <p class="text-coral text-sm font-medium tracking-[3px] uppercase mb-4">Premium Collection</p>
+                                <h2 class="text-4xl font-light tracking-[2px] text-primary mb-6">Swiss Precision Meets Modern Design</h2>
+                                <p class="text-muted text-lg leading-relaxed mb-8">
+                                    Discover our exclusive collection of luxury timepieces, where traditional Swiss craftsmanship meets contemporary design. Each watch is meticulously crafted with precision movements and premium materials.
+                                </p>
+                                
+                                <div class="space-y-4 mb-8">
+                                    <div class="flex items-start gap-4">
+                                        <div class="w-2 h-2 bg-coral rounded-full mt-2"></div>
+                                        <div>
+                                            <h4 class="font-medium text-primary mb-1">Swiss Movement</h4>
+                                            <p class="text-muted">Authentic Swiss automatic movements for unparalleled precision</p>
+                                        </div>
+                                    </div>
+                                    <div class="flex items-start gap-4">
+                                        <div class="w-2 h-2 bg-coral rounded-full mt-2"></div>
+                                        <div>
+                                            <h4 class="font-medium text-primary mb-1">Premium Materials</h4>
+                                            <p class="text-muted">Sapphire crystal, titanium, and genuine leather construction</p>
+                                        </div>
+                                    </div>
+                                    <div class="flex items-start gap-4">
+                                        <div class="w-2 h-2 bg-coral rounded-full mt-2"></div>
+                                        <div>
+                                            <h4 class="font-medium text-primary mb-1">Water Resistant</h4>
+                                            <p class="text-muted">Professional grade water resistance up to 300 meters</p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <button class="btn-primary">Explore Collection</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Watch Blog Section -->
+            <section id="watchblog" class="py-20 bg-white">
+                <div class="container mx-auto px-4">
+                    <div class="text-center mb-12">
+                        <p class="text-sm text-coral font-medium tracking-[2px] uppercase mb-2">OUR BLOG</p>
+                        <h2 class="text-4xl font-bold text-primary tracking-wide">Watch Stories & Insights</h2>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+                        <div class="overflow-hidden cursor-pointer group border-2 rounded-lg" style="border-color: hsl(var(--coral));">
+                            <div class="relative aspect-[16/9] overflow-hidden">
+                                <img src="src/assets/watch-blog-1.jpg" alt="Blog post" class="w-full h-full object-cover transition-transform duration-300 group-hover:-translate-y-2">
+                            </div>
+                            <div class="pt-4 transition-transform duration-300 group-hover:-translate-y-1">
+                                <p class="text-sm text-muted mb-2">Jan 20, 2025</p>
+                                <h3 class="text-lg font-bold text-primary mb-3 leading-tight">The Ultimate Guide to Luxury Timepieces</h3>
+                                <button class="text-sm text-coral font-medium border-b border-coral hover:text-primary hover:border-primary transition-colors">READ MORE</button>
+                            </div>
+                        </div>
+
+                        <div class="overflow-hidden cursor-pointer group border-2 rounded-lg" style="border-color: hsl(var(--primary));">
+                            <div class="relative aspect-[16/9] overflow-hidden">
+                                <img src="src/assets/watch-blog-2.jpg" alt="Blog post" class="w-full h-full object-cover transition-transform duration-300 group-hover:-translate-y-2">
+                            </div>
+                            <div class="pt-4 transition-transform duration-300 group-hover:-translate-y-1">
+                                <p class="text-sm text-muted mb-2">Jan 18, 2025</p>
+                                <h3 class="text-lg font-bold text-primary mb-3 leading-tight">Building Your Watch Collection: Expert Tips</h3>
+                                <button class="text-sm text-coral font-medium border-b border-coral hover:text-primary hover:border-primary transition-colors">READ MORE</button>
+                            </div>
+                        </div>
+
+                        <div class="overflow-hidden cursor-pointer group border-2 rounded-lg border-blue-500">
+                            <div class="relative aspect-[16/9] overflow-hidden">
+                                <img src="src/assets/watch-blog-3.jpg" alt="Blog post" class="w-full h-full object-cover transition-transform duration-300 group-hover:-translate-y-2">
+                            </div>
+                            <div class="pt-4 transition-transform duration-300 group-hover:-translate-y-1">
+                                <p class="text-sm text-muted mb-2">Jan 16, 2025</p>
+                                <h3 class="text-lg font-bold text-primary mb-3 leading-tight">The Art of Swiss Watchmaking Mastery</h3>
+                                <button class="text-sm text-coral font-medium border-b border-coral hover:text-primary hover:border-primary transition-colors">READ MORE</button>
+                            </div>
+                        </div>
+
+                        <div class="overflow-hidden cursor-pointer group border-2 rounded-lg border-emerald-500">
+                            <div class="relative aspect-[16/9] overflow-hidden">
+                                <img src="src/assets/watch-blog-4.jpg" alt="Blog post" class="w-full h-full object-cover transition-transform duration-300 group-hover:-translate-y-2">
+                            </div>
+                            <div class="pt-4 transition-transform duration-300 group-hover:-translate-y-1">
+                                <p class="text-sm text-muted mb-2">Jan 14, 2025</p>
+                                <h3 class="text-lg font-bold text-primary mb-3 leading-tight">Modern Smartwatches vs Traditional Timepieces</h3>
+                                <button class="text-sm text-coral font-medium border-b border-coral hover:text-primary hover:border-primary transition-colors">READ MORE</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Latest News Blog Section -->
+            <section id="blog" class="py-20 bg-neutral-light">
+                <div class="container mx-auto px-4">
+                    <div class="text-center mb-12">
+                        <p class="text-sm text-coral font-medium tracking-[2px] uppercase mb-2">LATEST NEWS</p>
+                        <h2 class="text-4xl font-bold text-primary tracking-wide">Watch New Trends</h2>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                        <div class="overflow-hidden cursor-pointer group">
+                            <div class="relative aspect-[4/3] overflow-hidden">
+                                <img src="src/assets/watch-news-1.jpg" alt="Latest Watch Trends" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">
+                                <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-6 transition-transform duration-500 group-hover:scale-110">
+                                    <p class="text-sm text-white/90 mb-2">Jan 15, 2025</p>
+                                    <h3 class="text-lg font-bold text-white mb-3">Latest Watch Trends 2025: What's New in Timepieces</h3>
+                                    <button class="text-sm text-white font-medium border-b border-white hover:text-coral hover:border-coral transition-colors">READ MORE</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="overflow-hidden cursor-pointer group">
+                            <div class="relative aspect-[4/3] overflow-hidden">
+                                <img src="src/assets/watch-news-2.jpg" alt="Swiss Craftsmanship" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">
+                                <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-6 transition-transform duration-500 group-hover:scale-110">
+                                    <p class="text-sm text-white/90 mb-2">Jan 12, 2025</p>
+                                    <h3 class="text-lg font-bold text-white mb-3">Swiss Craftsmanship: The Art of Watchmaking</h3>
+                                    <button class="text-sm text-white font-medium border-b border-white hover:text-coral hover:border-coral transition-colors">READ MORE</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="overflow-hidden cursor-pointer group">
+                            <div class="relative aspect-[4/3] overflow-hidden">
+                                <img src="src/assets/watch-news-3.jpg" alt="Investment Watches" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">
+                                <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-6 transition-transform duration-500 group-hover:scale-110">
+                                    <p class="text-sm text-white/90 mb-2">Jan 10, 2025</p>
+                                    <h3 class="text-lg font-bold text-white mb-3">Investment Watches: Building Your Collection</h3>
+                                    <button class="text-sm text-white font-medium border-b border-white hover:text-coral hover:border-coral transition-colors">READ MORE</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <!-- About Content -->
+        <div id="about-content" class="content-section hidden">
+            <main class="py-20 bg-white">
+                <div class="container mx-auto px-4">
+                    <h1 class="text-3xl text-center text-primary mb-8">About Our Watch Store</h1>
+                    
+                    <div class="max-w-2xl mx-auto text-center">
+                        <p class="text-lg text-muted mb-6">
+                            Hi! Welcome to our watch website. We sell really nice watches.
+                        </p>
+                        
+                        <p class="text-muted mb-4">
+                            We have been selling watches for a while now. Our watches are good quality and not too expensive.
+                        </p>
+                        
+                        <p class="text-muted mb-4">
+                            You can buy watches here and we will ship them to you. We have many different types of watches.
+                        </p>
+                        
+                        <p class="text-muted">
+                            Thank you for visiting our website!
+                        </p>
+                    </div>
+                </div>
+            </main>
+        </div>
+
+        <!-- Contact Content -->
+        <div id="contact-content" class="content-section hidden">
+            <main class="py-20 bg-white">
+                <div class="container mx-auto px-4 max-w-2xl">
+                    <h1 class="text-3xl text-center text-primary mb-8">Contact Us</h1>
+                    
+                    <div class="text-center mb-8">
+                        <p class="text-muted mb-4">
+                            If you have questions about watches, please send us a message!
+                        </p>
+                        <p class="text-muted">
+                            Phone: 123-456-7890<br>
+                            Email: info@watchstore.com
+                        </p>
+                    </div>
+                    
+                    <form id="contact-form" class="space-y-4">
+                        <div>
+                            <label class="block text-primary mb-2">Your Name:</label>
+                            <input type="text" id="contact-name" class="form-input" required>
+                        </div>
+                        
+                        <div>
+                            <label class="block text-primary mb-2">Your Email:</label>
+                            <input type="email" id="contact-email" class="form-input" required>
+                        </div>
+                        
+                        <div>
+                            <label class="block text-primary mb-2">Your Message:</label>
+                            <textarea id="contact-message" class="form-input" rows="5" required></textarea>
+                        </div>
+                        
+                        <button type="submit" class="w-full btn-coral">Send Message</button>
+                    </form>
+                </div>
+            </main>
+        </div>
+
+        <!-- Footer -->
+        <footer id="footer" class="bg-primary text-white py-16">
+            <div class="container mx-auto px-4">
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+                    <!-- Collections -->
+                    <div>
+                        <h3 class="text-lg font-medium mb-6 tracking-wide">WATCH COLLECTIONS</h3>
+                        <ul class="space-y-3">
+                            <li><a href="#" class="text-sm text-gray-300 hover:text-white transition-colors">Luxury Swiss</a></li>
+                            <li><a href="#" class="text-sm text-gray-300 hover:text-white transition-colors">Sport Chronograph</a></li>
+                            <li><a href="#" class="text-sm text-gray-300 hover:text-white transition-colors">Smart Watches</a></li>
+                            <li><a href="#" class="text-sm text-gray-300 hover:text-white transition-colors">Classic Vintage</a></li>
+                        </ul>
+                    </div>
+
+                    <!-- Customer Service -->
+                    <div>
+                        <h3 class="text-lg font-medium mb-6 tracking-wide">CUSTOMER SERVICE</h3>
+                        <ul class="space-y-3">
+                            <li><a href="#" class="text-sm text-gray-300 hover:text-white transition-colors">Watch Care Guide</a></li>
+                            <li><a href="#" class="text-sm text-gray-300 hover:text-white transition-colors">Warranty Service</a></li>
+                            <li><a href="#" class="text-sm text-gray-300 hover:text-white transition-colors">Authentication</a></li>
+                            <li><a href="#" class="text-sm text-gray-300 hover:text-white transition-colors">Repair Services</a></li>
+                        </ul>
+                    </div>
+
+                    <!-- Contact -->
+                    <div>
+                        <h3 class="text-lg font-medium mb-6 tracking-wide">GET IN TOUCH</h3>
+                        <div class="text-sm text-gray-300 mb-4">
+                            <p>Visit our showroom at 123 Luxury Ave, Geneva, Switzerland or contact us at (+41) 22 123 4567 for expert watch consultation</p>
+                        </div>
+                        <div class="flex space-x-4">
+                            <i data-lucide="facebook" class="w-5 h-5 text-gray-300 hover:text-white cursor-pointer transition-colors"></i>
+                            <i data-lucide="twitter" class="w-5 h-5 text-gray-300 hover:text-white cursor-pointer transition-colors"></i>
+                            <i data-lucide="instagram" class="w-5 h-5 text-gray-300 hover:text-white cursor-pointer transition-colors"></i>
+                            <i data-lucide="youtube" class="w-5 h-5 text-gray-300 hover:text-white cursor-pointer transition-colors"></i>
+                        </div>
+                    </div>
+
+                    <!-- Newsletter -->
+                    <div>
+                        <h3 class="text-lg font-medium mb-6 tracking-wide">NEWSLETTER</h3>
+                        <div class="space-y-4">
+                            <input type="email" placeholder="email@example.com" class="w-full px-4 py-3 bg-white text-primary border-none outline-none text-sm">
+                            <button class="w-full bg-coral text-white px-4 py-3 text-sm font-medium tracking-wide uppercase hover:bg-coral/90 transition-colors">Subscribe</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Bottom -->
+                <div class="border-t border-gray-700 mt-12 pt-8 text-center">
+                    <p class="text-sm text-gray-300">Mahmoud thanks :)</p>
+                </div>
+            </div>
+        </footer>
+    </section>
+
+    <script>
+        // Initialize Lucide icons
+        lucide.createIcons();
+
+        // Global variables
+        let currentHeroSlide = 0;
+        const heroTitles = ['LUXURY WATCHES', 'SWISS CRAFTED', 'MODERN DESIGN', 'PREMIUM COLLECTION'];
+        let heroInterval;
+
+        // Authentication state
+        let isAuthenticated = localStorage.getItem('isAuthenticated') === 'true';
+
+        // Initialize app
+        function initApp() {
+            if (isAuthenticated) {
+                showSection('home');
+            } else {
+                showSection('login');
+            }
+            initHeroCarousel();
+        }
+
+        // Show specific section
+        function showSection(sectionName) {
+            // Hide all sections
+            document.querySelectorAll('.section').forEach(section => {
+                section.classList.remove('active');
+            });
+
+            // Hide all content sections
+            document.querySelectorAll('.content-section').forEach(section => {
+                section.classList.add('hidden');
+            });
+
+            // Show requested section
+            if (sectionName === 'login') {
+                document.getElementById('login-section').classList.add('active');
+            } else if (sectionName === 'register') {
+                document.getElementById('register-section').classList.add('active');
+            } else {
+                document.getElementById('main-app').classList.add('active');
+                
+                // Show specific content within main app
+                if (sectionName === 'home') {
+                    document.getElementById('home-content').classList.remove('hidden');
+                } else if (sectionName === 'about') {
+                    document.getElementById('about-content').classList.remove('hidden');
+                } else if (sectionName === 'contact') {
+                    document.getElementById('contact-content').classList.remove('hidden');
+                }
+            }
+        }
+
+        // Scroll to element
+        function scrollToElement(elementId) {
+            const element = document.getElementById(elementId);
+            if (element) {
+                element.scrollIntoView({ behavior: 'smooth' });
+            }
+        }
+
+        // Hero carousel functions
+        function initHeroCarousel() {
+            heroInterval = setInterval(nextHeroSlide, 4000);
+        }
+
+        function nextHeroSlide() {
+            clearInterval(heroInterval);
+            currentHeroSlide = (currentHeroSlide + 1) % 4;
+            updateHeroCarousel();
+            heroInterval = setInterval(nextHeroSlide, 4000);
+        }
+
+        function previousHeroSlide() {
+            clearInterval(heroInterval);
+            currentHeroSlide = (currentHeroSlide - 1 + 4) % 4;
+            updateHeroCarousel();
+            heroInterval = setInterval(nextHeroSlide, 4000);
+        }
+
+        function goToHeroSlide(index) {
+            clearInterval(heroInterval);
+            currentHeroSlide = index;
+            updateHeroCarousel();
+            heroInterval = setInterval(nextHeroSlide, 4000);
+        }
+
+        function updateHeroCarousel() {
+            const track = document.getElementById('hero-track');
+            const title = document.getElementById('hero-title');
+            const indicators = document.getElementById('hero-indicators').children;
+            
+            if (track) {
+                track.style.transform = `translateX(-${currentHeroSlide * 100}%)`;
+            }
+            
+            if (title) {
+                title.textContent = heroTitles[currentHeroSlide];
+            }
+            
+            // Update indicators
+            for (let i = 0; i < indicators.length; i++) {
+                indicators[i].className = i === currentHeroSlide 
+                    ? 'w-3 h-3 rounded-full bg-white transition-all duration-300'
+                    : 'w-3 h-3 rounded-full bg-white/50 transition-all duration-300';
+            }
+        }
+
+        // Authentication functions
+        function signOut() {
+            localStorage.removeItem('isAuthenticated');
+            isAuthenticated = false;
+            showSection('login');
+        }
+
+        // Form handlers
+        document.getElementById('login-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const email = document.getElementById('login-email').value;
+            const password = document.getElementById('login-password').value;
+            
+            if (email && password) {
+                localStorage.setItem('isAuthenticated', 'true');
+                isAuthenticated = true;
+                showSection('home');
+            }
+        });
+
+        document.getElementById('register-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const password = document.getElementById('register-password').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+            
+            if (password !== confirmPassword) {
+                alert('Passwords do not match');
+                return;
+            }
+            
+            localStorage.setItem('isAuthenticated', 'true');
+            isAuthenticated = true;
+            showSection('home');
+        });
+
+        document.getElementById('contact-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            alert('Message sent! We will contact you soon.');
+            document.getElementById('contact-name').value = '';
+            document.getElementById('contact-email').value = '';
+            document.getElementById('contact-message').value = '';
+        });
+
+        // Navigation handlers
+        document.getElementById('goto-register').addEventListener('click', function(e) {
+            e.preventDefault();
+            showSection('register');
+        });
+
+        document.getElementById('goto-login').addEventListener('click', function(e) {
+            e.preventDefault();
+            showSection('login');
+        });
+
+        // Dropdown handler
+        document.getElementById('other-dropdown-btn').addEventListener('click', function() {
+            const dropdown = document.getElementById('other-dropdown');
+            dropdown.classList.toggle('hidden');
+        });
+
+        // Close dropdown when clicking outside
+        document.addEventListener('click', function(e) {
+            const dropdown = document.getElementById('other-dropdown');
+            const button = document.getElementById('other-dropdown-btn');
+            
+            if (!dropdown.contains(e.target) && !button.contains(e.target)) {
+                dropdown.classList.add('hidden');
+            }
+        });
+
+        // Initialize app when page loads
+        document.addEventListener('DOMContentLoaded', initApp);
+    </script>
+</body>
+</html>
